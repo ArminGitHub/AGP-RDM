@@ -1,6 +1,6 @@
-function output = nRDM_AGP(x, N, list)
+function output = AGP_overlap(x, N, list)
 %==========================================================================
-% This function caluates the n-pair RDM, i.e.
+% This function caluates the an element of the n-pair RDM, i.e.
 %  <AGP|Pdager_{p1}... Pdager_{pn} P_{q1}...P_{qn}|AGP>. 
 %
 % Without the ‘list’ input, this function gives <AGP|AGP>.
