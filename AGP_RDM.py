@@ -1,6 +1,8 @@
+import numpy as np
+
 """
 ===========================================================================
-This files containing methods to compute the norm and matrix elements of 
+This class containing methods to compute the norm and matrix elements of 
 n-pair RDMs over AGP. Functions therein use sumESP algorithm to 
 compute the matrix elements.
 
@@ -12,8 +14,6 @@ Last modified: April 28, 2020
 Author: Armin Khamoshi
 ===========================================================================
 """
-import numpy as np
-
 class AGP_wavefunction:
 
     def __init__(self, GemCoeffs, NumPairs):
@@ -72,7 +72,7 @@ class AGP_wavefunction:
 
         # Computes the <AGP|AGP> and scales the geminal coefficients
         AGP_norm = self.Norm()
-        self.eta = self.eta * (AGP_norm)**( -1/(2*self.np) )
+        self.eta = (self.eta) * ( (AGP_norm)**( -1/(2*self.np) ) )
 
         # Print a message once normalization is completed.
         print('The geminal coefficients are now normalized.' )
@@ -125,7 +125,7 @@ def sumESP(X, N, indices = None):
     S[:, 0] = 1
     S[0, 1] = X[0]
     for i in range(2, M+1):
-        for j in range( max(1, i+N-M), min(i, N) + 1 ):
+        for j in range( max(1, i+N-M), min(i, N)+1 ):
             S[i-1, j] = S[i-2, j] + X[i-1]*S[i-2, j-1]
     
     # The final output 
