@@ -66,11 +66,27 @@ class AGP_wavefunction:
 
         return prefactor*sumESP(self.eta**2, new_np, Indices)
 
+    def Normalize(self):   
+        """
+        Normalizes the geminal coefficients. This is done by:
+        
+        eta(p) --> eta(p) / (<AGP|AGP>)^(1/(2N))
+        """
+
+        # Computes the <AGP|AGP> and scales the geminal coefficients
+        AGP_norm = self.Norm()
+        self.eta = self.eta / (AGP_norm)**( 1/(2*self.np) )
+
+        # Print a message once normalization is completed.
+        print('The geminal coefficients are normalized.' )
+
+
 """
 ===========================================================================
 Implementation of the sumESP algorithm. 
 
-Let X = {x1,x2,...xM} and 0 <= N <= M. The algorithm computes the sum:
+Let X = {x1,x2,...xM} and 0 <= N <= M. The algorithm computes the following 
+sum:
 
 Sum[ i1 <... < iN ] X(i1)*X(i2) .... *X(iN)
 
