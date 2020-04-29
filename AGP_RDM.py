@@ -1,8 +1,8 @@
 """
 ===========================================================================
-A class containing all the methods to compute matrix elements of n-pair 
-RDMs over AGP. The methods in this class use sumESP algorithm to compute 
-the matrix elements.
+A class containing all methods to compute the norm and matrix elements of 
+n-pair RDMs over AGP. The methods in this class use sumESP algorithm to 
+compute the matrix elements.
 
 For details see our paper: 
 J. Chem. Phys. 151, 184103 (2019): https://doi.org/10.1063/1.5127850
@@ -16,27 +16,55 @@ import numpy as np
 
 class AGP_wavefunction:
 
-    def __init__(self, Gems, NumPairs):
+    def __init__(self, GemCoeffs, NumPairs):
         """
         The constructor of the class.
 
-        Gems: array of geminal coefficients. Must be a numpy array of 
-            size M, where M is the system's size. 
-        NumPairs: Number of pairs. An integer 0 <= NumPairs <= M. 
+        GemCoeffs: array of geminal coefficients. Must be a numpy array 
+            of size M, where M is the system's size. 
+        NumPairs: Number of pairs. An integer st 0 <= NumPairs <= M. 
         """
-        self.eta = Gems
+        self.eta = GemCoeffs
         self.np = NumPairs
     
     def Norm(self):
         """
-        Computes the norm of AGP, <AGP|AGP>. This is computed by the 
+        Computes the norm of AGP, <AGP|AGP>. It is computed by the 
         sumESP algorithm.
         """
         return sumESP(self.eta**2, self.np)
 
-    def RDM(self, indices):
-        return sumESP(self.eta**2, self.np, indices-1)        
+    def RDM(self, L_indices, R_indices):
+        """
+        Computes the matrix element associated with the n-pair RDM: 
+        
+        <AGP|P!(p1)...P!(pn) P(q1)...P(qn)|AGP>
 
+        Note: The 'pi' refere to the actual orbital indexing and thus 
+        starts from 1.
+
+        Inputs:
+            R_indices: The indices of pair-annihilation operators acting 
+                to the right. Numpy array of length ‘n’ as defined above.
+            L_indices: The indices of pair-creation operators acting 
+                to the left. Numpy array of length ‘n’ as defined above.
+        """
+
+        # If 'R_indices' or 'L_indices' have repetitive elements or if their
+        # lengths are not equal to each other, gives zero:
+        Length = len(L_indices)
+        if( Length != len( np.unique(L_indices) ) or
+            Length != len( np.unique(R_indices) ) or 
+            Length != len( R_indices) ):
+            return 0
+        else:
+            new_np = self.np - Length
+            Indices = np.concatenate( (L_indices, R_indices) )
+
+        # Computes the prefactor:
+        prefactor = np.prod( self.eta(Indices) )
+
+        return prefactor*sumESP(self.eta**2, new_np, Indices)
 
 """
 ===========================================================================
@@ -68,6 +96,8 @@ def sumESP(X, N, indices = None):
     # By definition
     if N == 0:
         return 1
+    elif N < 0:
+        return 0
 
     # If 'indices' is not empty remove the, corresponding elements 
     # from 'X'.
