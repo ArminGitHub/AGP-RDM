@@ -1,7 +1,7 @@
 """
 ===========================================================================
-A class containing all methods to compute the norm and matrix elements of 
-n-pair RDMs over AGP. The methods in this class use sumESP algorithm to 
+This files containing methods to compute the norm and matrix elements of 
+n-pair RDMs over AGP. Functions therein use sumESP algorithm to 
 compute the matrix elements.
 
 For details see our paper: 
@@ -40,9 +40,6 @@ class AGP_wavefunction:
         
         <AGP|P!(p1)...P!(pn) P(q1)...P(qn)|AGP>
 
-        Note: The 'pi' refere to the actual orbital indexing and thus 
-        starts from 1.
-
         Inputs:
             R_indices: The indices of pair-annihilation operators acting 
                 to the right. Numpy array of length ‘n’ as defined above.
@@ -62,7 +59,7 @@ class AGP_wavefunction:
             Indices = np.concatenate( (L_indices, R_indices) )
 
         # Computes the prefactor:
-        prefactor = np.prod( self.eta(Indices) )
+        prefactor = np.prod( self.eta[Indices] )
 
         return prefactor*sumESP(self.eta**2, new_np, Indices)
 
@@ -75,10 +72,10 @@ class AGP_wavefunction:
 
         # Computes the <AGP|AGP> and scales the geminal coefficients
         AGP_norm = self.Norm()
-        self.eta = self.eta / (AGP_norm)**( 1/(2*self.np) )
+        self.eta = self.eta * (AGP_norm)**( -1/(2*self.np) )
 
         # Print a message once normalization is completed.
-        print('The geminal coefficients are normalized.' )
+        print('The geminal coefficients are now normalized.' )
 
 
 """
@@ -109,10 +106,10 @@ Author: Armin Khamoshi
 """
 def sumESP(X, N, indices = None):
 
-    # By definition
+    # By definition...
     if N == 0:
         return 1
-    elif N < 0:
+    elif(N < 0 or N > len(X)):
         return 0
 
     # If 'indices' is not empty remove the, corresponding elements 

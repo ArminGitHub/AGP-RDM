@@ -9,10 +9,13 @@ N = 1
 myAGP = AGP_wavefunction(eta, N)
 
 # compute sumESP
-myAGP.np = 4
+myAGP.np = 2
+myAGP.Norm()
+myAGP.Normalize()
 myAGP.Norm()
 
 # Compute some overlap
 myAGP.np = 3
-indices = np.array([1,5])
-myAGP.RDM(indices)
+L = np.array([1,4, 3])
+R = np.array([4,0,0])
+myAGP.RDM(L, R)
